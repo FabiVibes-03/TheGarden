@@ -34,18 +34,39 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
     }
   }
 
-  // Devuelve un ícono de corazón con color según el valor de ánimo.
-  Widget _buildMoodIndicator(double mood) {
-    Color color;
-    if (mood < 30) {
-      color = Colors.red;
-    } else if (mood < 60) {
-      color = Colors.orange;
-    } else {
-      color = Colors.pink;
-    }
-    return Icon(Icons.favorite, color: color, size: 20);
+int _getMoodStateIndex(double mood) {
+  int index = (mood / 100 * 6).round();
+  return index.clamp(0, 6);
+}
+
+// Devuelve la descripción del estado de ánimo según el valor
+  String _getMoodDescription(double mood) {
+    final List<String> moodStates = [
+      "Muy mal",
+      "Mal",
+      "Ligeramente mal",
+      "Neutral",
+      "Ligeramente bien",
+      "Bien",
+      "Muy bien",
+    ];
+    int index = _getMoodStateIndex(mood);
+    return moodStates[index];
   }
+
+Color _getMoodColor(double mood) {
+  final List<Color> moodColors = [
+    Colors.purple,    // Muy mal
+    Colors.blue,      // Mal
+    Colors.lightBlue, // Ligeramente mal
+    Colors.lightGreen,// Neutral (verde claro)
+    Colors.green,     // Ligeramente bien (verde)
+    Colors.yellow,    // Bien (amarillo)
+    Colors.orange,    // Muy bien (naranja)
+  ];
+  int index = _getMoodStateIndex(mood);
+  return moodColors[index];
+}
 
   // Comprueba si hay un estado de ánimo registrado para el día
   bool _hasMood(DateTime day) {
@@ -91,7 +112,11 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
                   final mood = _getMood(day)!;
                   return Positioned(
                     bottom: 1,
-                    child: _buildMoodIndicator(mood),
+                    child: Icon(
+                      Icons.favorite,
+                      color: _getMoodColor(mood),
+                      size: 24,
+                    )
                   );
                 }
                 return const SizedBox();
@@ -100,22 +125,33 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
           ),
           const Divider(),
           if (_selectedDay != null && _hasMood(_selectedDay!))
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Text(
-                    "Estado de ánimo del ${_selectedDay!.toLocal().toString().split(' ')[0]}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 10),
-                  _buildMoodIndicator(_getMood(_selectedDay!)!),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Valor: ${_getMood(_selectedDay!)!.toStringAsFixed(1)}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
+            Card(
+              margin: const EdgeInsets.all(16.0),
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      "Estado de ánimo del ${_selectedDay!.toLocal().toString().split(' ')[0]}",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Icon(
+                      Icons.favorite,
+                      color: _getMoodColor(_getMood(_selectedDay!)!),
+                      size: 40,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      _getMoodDescription(_getMood(_selectedDay!)!),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
             )
           else

@@ -40,7 +40,7 @@ class GardenStats {
   );
 
   factory GardenStats.initial() => GardenStats(
-    health: 100.0,
+    health: 50.0,
     flowersCount: 0,
     hasButterflies: false,
     lastUpdate: DateTime.now(),
@@ -115,7 +115,7 @@ class GardenProvider with ChangeNotifier {
   void _naturalHealthDecay() {
     // Reducción natural de la salud con el tiempo
     final timeSinceLastUpdate = DateTime.now().difference(_stats.lastUpdate);
-    final decayRate = 2.0 * (timeSinceLastUpdate.inHours / 24); // 2% por día
+    final decayRate = 2.0 * (timeSinceLastUpdate.inHours / 12); // 2% por 12 horas
     
     _updateHealth(-decayRate);
   }
