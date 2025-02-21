@@ -1,0 +1,6 @@
+* text=auto
+*.dart text eol=lf
+*.lock text eol=lf
+
+*.jpg binary 
+*.png binary
